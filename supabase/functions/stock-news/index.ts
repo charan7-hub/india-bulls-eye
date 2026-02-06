@@ -26,23 +26,23 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    // Fetch news from GNews
+    // Fetch news from NewsData.io
     const searchQuery = companyName || symbol;
-    const newsUrl = `https://gnews.io/api/v4/search?q=${encodeURIComponent(searchQuery + " stock")}&lang=en&country=in&max=10&apikey=${NEWS_API_KEY}`;
+    const newsUrl = `https://newsdata.io/api/1/latest?apikey=${NEWS_API_KEY}&q=${encodeURIComponent(searchQuery)}&country=in&language=en&category=business`;
 
     const newsResponse = await fetch(newsUrl);
     if (!newsResponse.ok) {
       const errText = await newsResponse.text();
-      console.error("GNews error:", newsResponse.status, errText);
+      console.error("NewsData error:", newsResponse.status, errText);
       throw new Error(`News API error: ${newsResponse.status}`);
     }
 
     const newsData = await newsResponse.json();
-    const articles = (newsData.articles || []).map((a: any) => ({
+    const articles = (newsData.results || []).map((a: any) => ({
       title: a.title,
-      description: a.description,
-      source: a.source?.name || "Unknown",
-      url: a.url,
+      description: a.description || a.content || "",
+      source: a.source_name || a.source_id || "Unknown",
+      url: a.link || "#",
     }));
 
     if (articles.length === 0) {
