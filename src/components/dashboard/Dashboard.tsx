@@ -6,6 +6,7 @@ import { Watchlist } from './Watchlist';
 import { IndiaFactorPanel } from './IndiaFactorPanel';
 import { AIPrediction } from './AIPrediction';
 import { FinancialHighlights } from './FinancialHighlights';
+import { MarketIntelligence } from './MarketIntelligence';
 import { useWatchlist } from '@/hooks/useWatchlist';
 
 export function Dashboard() {
@@ -89,6 +90,9 @@ export function Dashboard() {
               <AIPrediction symbol={selectedStock} />
               <FinancialHighlights symbol={selectedStock} />
             </div>
+
+            {/* Live Market Intelligence */}
+            <MarketIntelligence symbol={selectedStock} />
           </div>
         </main>
 
