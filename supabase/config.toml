@@ -1,1 +1,4 @@
 project_id = "cnrkynvgwaoqfayuceci"
+
+[functions.stock-news]
+verify_jwt = false
