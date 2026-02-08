@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import { LogOut } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
 import { StockSearch } from './StockSearch';
 import { StockHeader } from './StockHeader';
 import { PriceChart } from './PriceChart';
@@ -11,6 +14,7 @@ import { useWatchlist } from '@/hooks/useWatchlist';
 
 export function Dashboard() {
   const [selectedStock, setSelectedStock] = useState('RELIANCE');
+  const { signOut, user } = useAuth();
   const { watchlist, addToWatchlist, removeFromWatchlist, isInWatchlist } =
     useWatchlist();
 
@@ -46,7 +50,7 @@ export function Dashboard() {
             onAddToWatchlist={addToWatchlist}
           />
 
-          <div className="flex items-center gap-2 text-xs">
+          <div className="flex items-center gap-3 text-xs">
             <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-terminal-green/10 text-terminal-green">
               <span className="w-1.5 h-1.5 rounded-full bg-terminal-green animate-pulse"></span>
               Market Open
@@ -57,6 +61,15 @@ export function Dashboard() {
                 minute: '2-digit',
               })}
             </span>
+            {user && (
+              <span className="text-muted-foreground truncate max-w-[120px]" title={user.email ?? ''}>
+                {user.email}
+              </span>
+            )}
+            <Button variant="ghost" size="sm" onClick={signOut} className="gap-1.5 text-muted-foreground hover:text-destructive">
+              <LogOut className="h-3.5 w-3.5" />
+              Logout
+            </Button>
           </div>
         </div>
       </header>
