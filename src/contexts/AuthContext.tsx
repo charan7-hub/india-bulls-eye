@@ -1,53 +1,71 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import type { User, Session } from '@supabase/supabase-js';
+
+interface User {
+  id: string;
+  identifier: string;
+  loginType: 'email' | 'mobile';
+  name: string;
+}
 
 interface AuthContextType {
   user: User | null;
-  session: Session | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  logout: () => Promise<void>;
+  login: (identifier: string, loginType: 'email' | 'mobile') => Promise<void>;
+  logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const STORAGE_KEY = 'stockpulse_auth';
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Listen for auth changes FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        setIsLoading(false);
+    // Check for existing session on mount
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        setUser(parsed);
+      } catch {
+        localStorage.removeItem(STORAGE_KEY);
       }
-    );
-
-    // Then check existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setIsLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
+    }
+    setIsLoading(false);
   }, []);
 
-  const logout = async () => {
-    await supabase.auth.signOut();
+  const login = async (identifier: string, loginType: 'email' | 'mobile') => {
+    // Simulate API delay
+    await new Promise((resolve) => setTimeout(resolve, 800));
+
+    const newUser: User = {
+      id: crypto.randomUUID(),
+      identifier,
+      loginType,
+      name: loginType === 'email' 
+        ? identifier.split('@')[0] 
+        : `User ${identifier.slice(-4)}`,
+    };
+
+    setUser(newUser);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(newUser));
+  };
+
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem(STORAGE_KEY);
   };
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        session,
-        isAuthenticated: !!session,
+        isAuthenticated: !!user,
         isLoading,
+        login,
         logout,
       }}
     >
