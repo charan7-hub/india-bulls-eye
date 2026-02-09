@@ -44,6 +44,45 @@ export type Database = {
         }
         Relationships: []
       }
+      sector_analysis: {
+        Row: {
+          article_count: number
+          created_at: string
+          hot_stock_name: string | null
+          hot_stock_ticker: string | null
+          id: string
+          previous_sentiment_score: number | null
+          sector_code: string
+          sector_name: string
+          sentiment_score: number
+          updated_at: string
+        }
+        Insert: {
+          article_count?: number
+          created_at?: string
+          hot_stock_name?: string | null
+          hot_stock_ticker?: string | null
+          id?: string
+          previous_sentiment_score?: number | null
+          sector_code: string
+          sector_name: string
+          sentiment_score?: number
+          updated_at?: string
+        }
+        Update: {
+          article_count?: number
+          created_at?: string
+          hot_stock_name?: string | null
+          hot_stock_ticker?: string | null
+          id?: string
+          previous_sentiment_score?: number | null
+          sector_code?: string
+          sector_name?: string
+          sentiment_score?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string

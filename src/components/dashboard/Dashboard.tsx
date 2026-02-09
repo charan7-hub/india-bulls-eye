@@ -10,10 +10,12 @@ import { IndiaFactorPanel } from './IndiaFactorPanel';
 import { AIPrediction } from './AIPrediction';
 import { FinancialHighlights } from './FinancialHighlights';
 import { MarketIntelligence } from './MarketIntelligence';
+import { MarketPulseSidebar } from './MarketPulseSidebar';
 import { useWatchlist } from '@/hooks/useWatchlist';
 
 export function Dashboard() {
   const [selectedStock, setSelectedStock] = useState('RELIANCE');
+  const [activeSector, setActiveSector] = useState<string | null>(null);
   const { signOut, user } = useAuth();
   const { watchlist, addToWatchlist, removeFromWatchlist, isInWatchlist } =
     useWatchlist();
@@ -76,14 +78,20 @@ export function Dashboard() {
 
       {/* Main Content */}
       <div className="flex h-[calc(100vh-57px)]">
-        {/* Left Sidebar - Watchlist */}
-        <aside className="w-64 border-r border-border bg-sidebar flex-shrink-0">
-          <Watchlist
-            watchlist={watchlist}
-            selectedStock={selectedStock}
-            onSelectStock={setSelectedStock}
-            onRemoveFromWatchlist={removeFromWatchlist}
+        {/* Left Sidebar - Market Pulse + Watchlist */}
+        <aside className="w-64 border-r border-border bg-sidebar flex-shrink-0 flex flex-col">
+          <MarketPulseSidebar
+            onSectorClick={setActiveSector}
+            activeSector={activeSector}
           />
+          <div className="border-t border-border flex-1 min-h-0">
+            <Watchlist
+              watchlist={watchlist}
+              selectedStock={selectedStock}
+              onSelectStock={setSelectedStock}
+              onRemoveFromWatchlist={removeFromWatchlist}
+            />
+          </div>
         </aside>
 
         {/* Main Content Area */}
@@ -105,7 +113,7 @@ export function Dashboard() {
             </div>
 
             {/* Live Market Intelligence */}
-            <MarketIntelligence symbol={selectedStock} />
+            <MarketIntelligence symbol={selectedStock} sectorFilter={activeSector} />
           </div>
         </main>
 
