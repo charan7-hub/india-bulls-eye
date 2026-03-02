@@ -10,12 +10,10 @@ import { IndiaFactorPanel } from './IndiaFactorPanel';
 import { AIPrediction } from './AIPrediction';
 import { FinancialHighlights } from './FinancialHighlights';
 import { MarketIntelligence } from './MarketIntelligence';
-import { MarketPulseSidebar } from './MarketPulseSidebar';
 import { useWatchlist } from '@/hooks/useWatchlist';
 
 export function Dashboard() {
   const [selectedStock, setSelectedStock] = useState('RELIANCE');
-  const [activeSector, setActiveSector] = useState<string | null>(null);
   const { signOut, user } = useAuth();
   const { watchlist, addToWatchlist, removeFromWatchlist, isInWatchlist } =
     useWatchlist();
@@ -35,7 +33,7 @@ export function Dashboard() {
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded bg-gradient-to-br from-terminal-cyan to-terminal-blue flex items-center justify-center">
+              <div className="w-8 h-8 bg-gradient-to-br from-terminal-cyan to-terminal-blue flex items-center justify-center">
                 <span className="text-lg font-bold text-primary-foreground">₹</span>
               </div>
               <div>
@@ -53,8 +51,8 @@ export function Dashboard() {
           />
 
           <div className="flex items-center gap-3 text-xs">
-            <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-terminal-green/10 text-terminal-green">
-              <span className="w-1.5 h-1.5 rounded-full bg-terminal-green animate-pulse"></span>
+            <div className="flex items-center gap-1.5 px-2 py-1 bg-terminal-green/10 text-terminal-green">
+              <span className="w-1.5 h-1.5 bg-terminal-green animate-pulse"></span>
               Market Open
             </div>
             <span className="text-muted-foreground font-mono">
@@ -78,20 +76,9 @@ export function Dashboard() {
 
       {/* Main Content */}
       <div className="flex h-[calc(100vh-57px)]">
-        {/* Left Sidebar - Market Pulse + Watchlist */}
-        <aside className="w-64 border-r border-border bg-sidebar flex-shrink-0 flex flex-col">
-          <MarketPulseSidebar
-            onSectorClick={setActiveSector}
-            activeSector={activeSector}
-          />
-          <div className="border-t border-border flex-1 min-h-0">
-            <Watchlist
-              watchlist={watchlist}
-              selectedStock={selectedStock}
-              onSelectStock={setSelectedStock}
-              onRemoveFromWatchlist={removeFromWatchlist}
-            />
-          </div>
+        {/* Left Sidebar - Live Market News */}
+        <aside className="w-72 border-r border-border bg-sidebar flex-shrink-0 overflow-y-auto terminal-scrollbar">
+          <MarketIntelligence symbol={selectedStock} />
         </aside>
 
         {/* Main Content Area */}
@@ -103,23 +90,25 @@ export function Dashboard() {
           />
 
           <div className="p-4 space-y-4">
-            {/* Chart */}
             <PriceChart symbol={selectedStock} />
 
-            {/* Analysis Cards Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <AIPrediction symbol={selectedStock} />
               <FinancialHighlights symbol={selectedStock} />
             </div>
 
-            {/* Live Market Intelligence */}
-            <MarketIntelligence symbol={selectedStock} sectorFilter={activeSector} />
+            <IndiaFactorPanel symbol={selectedStock} />
           </div>
         </main>
 
-        {/* Right Sidebar - India Factor */}
-        <aside className="w-72 border-l border-border bg-sidebar flex-shrink-0">
-          <IndiaFactorPanel symbol={selectedStock} />
+        {/* Right Sidebar - Watchlist */}
+        <aside className="w-64 border-l border-border bg-sidebar flex-shrink-0">
+          <Watchlist
+            watchlist={watchlist}
+            selectedStock={selectedStock}
+            onSelectStock={setSelectedStock}
+            onRemoveFromWatchlist={removeFromWatchlist}
+          />
         </aside>
       </div>
     </div>

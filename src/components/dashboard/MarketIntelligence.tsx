@@ -37,7 +37,7 @@ const categoryColors: Record<string, string> = {
   'Sector Trends': 'bg-terminal-gold/15 text-terminal-gold border-terminal-gold/30',
 };
 
-export function MarketIntelligence({ symbol, sectorFilter }: { symbol: string; sectorFilter?: string | null }) {
+export function MarketIntelligence({ symbol }: { symbol: string }) {
   const [segments, setSegments] = useState<NewsSegment[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -117,17 +117,12 @@ export function MarketIntelligence({ symbol, sectorFilter }: { symbol: string; s
   };
 
   return (
-    <Card className="border-border bg-card">
+    <Card className="border-border bg-card border-0">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground">
             <Newspaper className="w-4 h-4 text-terminal-cyan" />
             Live Market Intelligence
-            {sectorFilter && (
-              <Badge variant="outline" className="text-[10px] ml-1 bg-terminal-cyan/10 text-terminal-cyan border-terminal-cyan/30">
-                {sectorFilter.replace('NIFTY_', '').replace('_', ' ')}
-              </Badge>
-            )}
           </CardTitle>
           <Button
             variant="ghost"
@@ -170,23 +165,7 @@ export function MarketIntelligence({ symbol, sectorFilter }: { symbol: string; s
         {!loading && segments.length > 0 && (
           <ScrollArea className="h-[400px] pr-2">
             <div className="space-y-3">
-              {segments
-                .filter((seg) => {
-                  if (!sectorFilter) return true;
-                  // Map sector codes to category keywords for filtering
-                  const sectorKeywords: Record<string, string[]> = {
-                    NIFTY_BANK: ['bank', 'banking', 'financial', 'hdfc', 'icici', 'sbi', 'kotak', 'axis'],
-                    NIFTY_IT: ['it', 'tech', 'software', 'infosys', 'tcs', 'wipro', 'hcl', 'techm'],
-                    NIFTY_AUTO: ['auto', 'automobile', 'vehicle', 'tata motors', 'maruti', 'mahindra', 'bajaj'],
-                    NIFTY_FMCG: ['fmcg', 'consumer', 'hindustan unilever', 'itc', 'nestle', 'dabur', 'britannia'],
-                    NIFTY_METAL: ['metal', 'steel', 'mining', 'tata steel', 'hindalco', 'jsw', 'vedanta'],
-                    NIFTY_ENERGY: ['energy', 'oil', 'gas', 'power', 'reliance', 'ongc', 'ntpc', 'adani'],
-                  };
-                  const keywords = sectorKeywords[sectorFilter] || [];
-                  const text = `${seg.headline} ${seg.summary} ${seg.category}`.toLowerCase();
-                  return keywords.some((kw) => text.includes(kw));
-                })
-                .map((seg, idx) => {
+              {segments.map((seg, idx) => {
                 const SentimentIcon = sentimentConfig[seg.sentiment]?.icon || Minus;
                 return (
                   <div
