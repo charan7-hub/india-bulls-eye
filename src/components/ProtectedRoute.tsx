@@ -1,15 +1,32 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
 }
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
   const location = useLocation();
+  const [hasUsername, setHasUsername] = useState<boolean | null>(null);
 
-  if (isLoading) {
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from('profiles')
+      .select('display_name')
+      .eq('user_id', user.id)
+      .single()
+      .then(({ data }) => {
+        const name = data?.display_name;
+        // Consider username set if display_name exists AND is not just the email
+        setHasUsername(!!name && name !== user.email);
+      });
+  }, [user]);
+
+  if (isLoading || (isAuthenticated && hasUsername === null)) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
@@ -21,8 +38,11 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   }
 
   if (!isAuthenticated) {
-    // Redirect to login while saving the attempted location
     return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  if (!hasUsername && location.pathname !== '/onboarding') {
+    return <Navigate to="/onboarding" replace />;
   }
 
   return <>{children}</>;
