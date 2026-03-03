@@ -25,8 +25,7 @@ export default function Onboarding() {
     setIsSubmitting(true);
     const { error } = await supabase
       .from('profiles')
-      .update({ display_name: username })
-      .eq('user_id', user.id);
+      .upsert({ user_id: user.id, email: user.email, display_name: username }, { onConflict: 'user_id' });
 
     if (error) {
       toast({ title: 'Error', description: error.message, variant: 'destructive' });

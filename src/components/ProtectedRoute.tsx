@@ -18,10 +18,9 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
       .from('profiles')
       .select('display_name')
       .eq('user_id', user.id)
-      .single()
+      .maybeSingle()
       .then(({ data }) => {
         const name = data?.display_name;
-        // Consider username set if display_name exists AND is not just the email
         setHasUsername(!!name && name !== user.email);
       });
   }, [user]);
