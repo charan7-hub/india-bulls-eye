@@ -24,6 +24,7 @@ import { useWatchlist } from '@/hooks/useWatchlist';
 export function Dashboard() {
   const [selectedStock, setSelectedStock] = useState('RELIANCE');
   const { signOut, user } = useAuth();
+  const navigate = useNavigate();
   const { watchlist, addToWatchlist, removeFromWatchlist, isInWatchlist } =
     useWatchlist();
 
