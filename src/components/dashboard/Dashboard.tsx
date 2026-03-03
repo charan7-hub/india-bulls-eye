@@ -83,6 +83,10 @@ export function Dashboard() {
                   {user?.email}
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => navigate('/profile')} className="cursor-pointer">
+                  <Settings className="mr-2 h-3.5 w-3.5" />
+                  Profile Settings
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={signOut} className="text-destructive focus:text-destructive cursor-pointer">
                   <LogOut className="mr-2 h-3.5 w-3.5" />
                   Log Out
