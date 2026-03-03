@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { LogOut, User } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { LogOut, User, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -23,6 +24,7 @@ import { useWatchlist } from '@/hooks/useWatchlist';
 export function Dashboard() {
   const [selectedStock, setSelectedStock] = useState('RELIANCE');
   const { signOut, user } = useAuth();
+  const navigate = useNavigate();
   const { watchlist, addToWatchlist, removeFromWatchlist, isInWatchlist } =
     useWatchlist();
 
@@ -81,6 +83,10 @@ export function Dashboard() {
                   {user?.email}
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => navigate('/profile')} className="cursor-pointer">
+                  <Settings className="mr-2 h-3.5 w-3.5" />
+                  Profile Settings
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={signOut} className="text-destructive focus:text-destructive cursor-pointer">
                   <LogOut className="mr-2 h-3.5 w-3.5" />
                   Log Out
