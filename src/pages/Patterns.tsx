@@ -190,7 +190,7 @@ const patterns: CandlestickPattern[] = [
     name: 'Piercing Line',
     sentiment: 'Bullish',
     description:
-      'A two-candle pattern at the bottom of a downtrend. The second bullish candle opens below the prior bearish candle's low but closes above its midpoint. It shows buyers fighting back with conviction.',
+      "A two-candle pattern at the bottom of a downtrend. The second bullish candle opens below the prior bearish candle low but closes above its midpoint. It shows buyers fighting back with conviction.",
     howToTrade:
       'Enter long at the close of the bullish candle. Stop-loss below the low of the pattern. Target the top of the first candle or next resistance.',
     candles: [
