@@ -83,7 +83,7 @@ const patterns: CandlestickPattern[] = [
     description:
       'Found at the end of a downtrend. Buyers tried to push higher during the session but sellers fought back. However, the fact that buyers even attempted signals a potential shift in momentum.',
     howToTrade:
-      'Confirm with a bullish follow-through candle. Enter above the Inverted Hammer's high. Stop-loss below the low of the pattern.',
+      "Confirm with a bullish follow-through candle. Enter above the Inverted Hammer high. Stop-loss below the low of the pattern.",
     candles: [
       { bodyTop: 75, bodyBottom: 85, wickTop: 25, wickBottom: 90, bullish: true },
     ],
