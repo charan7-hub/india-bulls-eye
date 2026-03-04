@@ -61,7 +61,7 @@ const patterns: CandlestickPattern[] = [
     description:
       'The Doji forms when the open and close are virtually equal. It signals indecision — neither buyers nor sellers have won. After a strong trend, it warns that momentum is fading and a reversal may be near.',
     howToTrade:
-      'Wait for the next candle to confirm direction. Place entry above or below the Doji's range. Stop-loss goes on the opposite side of the Doji's wick.',
+      "Wait for the next candle to confirm direction. Place entry above or below the Doji range. Stop-loss goes on the opposite side of the Doji wick.",
     candles: [
       { bodyTop: 58, bodyBottom: 60, wickTop: 30, wickBottom: 90, bullish: true },
     ],
