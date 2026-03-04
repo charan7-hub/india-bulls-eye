@@ -164,7 +164,7 @@ const patterns: CandlestickPattern[] = [
     name: 'Three White Soldiers',
     sentiment: 'Bullish',
     description:
-      'Three consecutive long-bodied bullish candles, each opening within the previous candle's body and closing progressively higher. It signals strong, sustained buying pressure and a powerful reversal from a downtrend.',
+      "Three consecutive long-bodied bullish candles, each opening within the previous candle body and closing progressively higher. It signals strong, sustained buying pressure and a powerful reversal from a downtrend.",
     howToTrade:
       'Enter long at the close of the third candle or on a pullback. Stop-loss below the first candle's low. Watch for overextension — consider partial profits at resistance.',
     candles: [
