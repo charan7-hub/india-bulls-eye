@@ -42,6 +42,14 @@ const App = () => (
               }
             />
             <Route
+              path="/patterns"
+              element={
+                <ProtectedRoute>
+                  <Patterns />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/"
               element={
                 <ProtectedRoute>

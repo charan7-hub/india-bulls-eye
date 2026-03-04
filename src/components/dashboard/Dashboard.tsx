@@ -61,6 +61,15 @@ export function Dashboard() {
           />
 
           <div className="flex items-center gap-3 text-xs">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+              onClick={() => navigate('/patterns')}
+            >
+              <CandlestickChart className="h-3.5 w-3.5" />
+              Patterns
+            </Button>
             <div className="flex items-center gap-1.5 px-2 py-1 bg-terminal-green/10 text-terminal-green">
               <span className="w-1.5 h-1.5 bg-terminal-green animate-pulse"></span>
               Market Open
