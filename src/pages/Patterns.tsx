@@ -72,7 +72,7 @@ const patterns: CandlestickPattern[] = [
     description:
       'Appears at the bottom of a downtrend. Sellers pushed the price sharply lower during the session, but buyers stepped in aggressively and pushed it back near the open. The long lower shadow shows buyer strength.',
     howToTrade:
-      'Enter long when the next candle closes above the Hammer's high. Place stop-loss below the Hammer's lower wick. Target a 1:2 risk-reward ratio.',
+      "Enter long when the next candle closes above the Hammer high. Place stop-loss below the Hammer lower wick. Target a 1:2 risk-reward ratio.",
     candles: [
       { bodyTop: 35, bodyBottom: 45, wickTop: 30, wickBottom: 95, bullish: true },
     ],
