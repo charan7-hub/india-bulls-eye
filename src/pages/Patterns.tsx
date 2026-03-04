@@ -227,7 +227,7 @@ const patterns: CandlestickPattern[] = [
     description:
       'Two candles with matching highs at the top of an uptrend. The market tested a resistance level twice and failed both times. Double rejection at the same level is a strong bearish signal.',
     howToTrade:
-      'Enter short below the second candle's close. Stop-loss above the matching highs. Target the nearest support.',
+      "Enter short below the second candle close. Stop-loss above the matching highs. Target the nearest support.",
     candles: [
       { bodyTop: 35, bodyBottom: 60, wickTop: 25, wickBottom: 65, bullish: true },
       { bodyTop: 40, bodyBottom: 60, wickTop: 25, wickBottom: 65, bullish: false },
