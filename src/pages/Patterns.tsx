@@ -177,7 +177,7 @@ const patterns: CandlestickPattern[] = [
     name: 'Three Black Crows',
     sentiment: 'Bearish',
     description:
-      'Three consecutive long-bodied bearish candles, each opening within the previous candle's body and closing progressively lower. It indicates strong selling pressure and a reliable reversal from an uptrend.',
+      "Three consecutive long-bodied bearish candles, each opening within the previous candle body and closing progressively lower. It indicates strong selling pressure and a reliable reversal from an uptrend.",
     howToTrade:
       'Enter short at the close of the third candle. Stop-loss above the first candle's high. Target key support levels below.',
     candles: [
