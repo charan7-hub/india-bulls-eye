@@ -166,7 +166,7 @@ const patterns: CandlestickPattern[] = [
     description:
       "Three consecutive long-bodied bullish candles, each opening within the previous candle body and closing progressively higher. It signals strong, sustained buying pressure and a powerful reversal from a downtrend.",
     howToTrade:
-      'Enter long at the close of the third candle or on a pullback. Stop-loss below the first candle's low. Watch for overextension — consider partial profits at resistance.',
+      "Enter long at the close of the third candle or on a pullback. Stop-loss below the first candle low. Watch for overextension — consider partial profits at resistance.",
     candles: [
       { bodyTop: 65, bodyBottom: 85, wickTop: 62, wickBottom: 88, bullish: true },
       { bodyTop: 45, bodyBottom: 68, wickTop: 42, wickBottom: 70, bullish: true },
