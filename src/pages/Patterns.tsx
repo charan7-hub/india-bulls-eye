@@ -144,7 +144,7 @@ const patterns: CandlestickPattern[] = [
     description:
       'Appears at the top of an uptrend. Buyers pushed the price higher but sellers took control and drove it back near the open. The long upper shadow signals rejection at higher levels.',
     howToTrade:
-      'Enter short when the next candle closes below the Shooting Star's low. Stop-loss above the upper wick. Target the nearest support level.',
+      "Enter short when the next candle closes below the Shooting Star low. Stop-loss above the upper wick. Target the nearest support level.",
     candles: [
       { bodyTop: 75, bodyBottom: 85, wickTop: 20, wickBottom: 90, bullish: false },
     ],
