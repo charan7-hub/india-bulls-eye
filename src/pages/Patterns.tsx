@@ -239,7 +239,7 @@ const patterns: CandlestickPattern[] = [
     description:
       'Two candles with matching lows at the bottom of a downtrend. The market tested a support level twice and held. Double support confirmation is a strong bullish reversal signal.',
     howToTrade:
-      'Enter long above the second candle's close. Stop-loss below the matching lows. Target the nearest resistance.',
+      "Enter long above the second candle close. Stop-loss below the matching lows. Target the nearest resistance.",
     candles: [
       { bodyTop: 50, bodyBottom: 70, wickTop: 45, wickBottom: 90, bullish: false },
       { bodyTop: 45, bodyBottom: 65, wickTop: 40, wickBottom: 90, bullish: true },
