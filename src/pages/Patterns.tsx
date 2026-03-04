@@ -179,7 +179,7 @@ const patterns: CandlestickPattern[] = [
     description:
       "Three consecutive long-bodied bearish candles, each opening within the previous candle body and closing progressively lower. It indicates strong selling pressure and a reliable reversal from an uptrend.",
     howToTrade:
-      'Enter short at the close of the third candle. Stop-loss above the first candle's high. Target key support levels below.',
+      "Enter short at the close of the third candle. Stop-loss above the first candle high. Target key support levels below.",
     candles: [
       { bodyTop: 25, bodyBottom: 48, wickTop: 22, wickBottom: 50, bullish: false },
       { bodyTop: 45, bodyBottom: 68, wickTop: 42, wickBottom: 70, bullish: false },
