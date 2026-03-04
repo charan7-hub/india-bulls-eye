@@ -155,7 +155,7 @@ const patterns: CandlestickPattern[] = [
     description:
       'Looks identical to a Hammer but appears at the top of an uptrend. The long lower shadow shows that sellers are beginning to emerge. It warns that the uptrend may be exhausting.',
     howToTrade:
-      'Wait for bearish confirmation on the next candle. Enter short below the Hanging Man's low. Stop-loss above its high.',
+      "Wait for bearish confirmation on the next candle. Enter short below the Hanging Man low. Stop-loss above its high.",
     candles: [
       { bodyTop: 30, bodyBottom: 40, wickTop: 25, wickBottom: 90, bullish: false },
     ],
