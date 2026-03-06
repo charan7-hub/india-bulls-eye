@@ -53,7 +53,7 @@ export function AICrewAnalysis({ symbol }: { symbol: string }) {
     setResult(null);
 
     try {
-      const stock = getStockData(symbol);
+      const stock = getStock(symbol);
       const indicators = getTechnicalIndicators(symbol);
 
       const { data, error } = await supabase.functions.invoke('stock-analysis', {
