@@ -2,3 +2,6 @@ project_id = "cnrkynvgwaoqfayuceci"
 
 [functions.stock-news]
 verify_jwt = false
+
+[functions.stock-analysis]
+verify_jwt = false
