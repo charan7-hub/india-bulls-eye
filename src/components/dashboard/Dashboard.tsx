@@ -98,8 +98,15 @@ export function Dashboard() {
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
-                  <User className="h-4 w-4" />
+                <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
+                  <Avatar className="h-7 w-7">
+                    {avatarUrl ? (
+                      <AvatarImage src={avatarUrl} alt="Profile" />
+                    ) : null}
+                    <AvatarFallback className="bg-muted text-muted-foreground text-xs">
+                      <User className="h-3.5 w-3.5" />
+                    </AvatarFallback>
+                  </Avatar>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
