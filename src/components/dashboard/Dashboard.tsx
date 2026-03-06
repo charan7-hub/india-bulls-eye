@@ -19,6 +19,7 @@ import { PriceChart } from './PriceChart';
 import { Watchlist } from './Watchlist';
 import { IndiaFactorPanel } from './IndiaFactorPanel';
 import { AIPrediction } from './AIPrediction';
+import { AICrewAnalysis } from './AICrewAnalysis';
 import { FinancialHighlights } from './FinancialHighlights';
 import { MarketIntelligence } from './MarketIntelligence';
 import { useWatchlist } from '@/hooks/useWatchlist';
