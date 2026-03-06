@@ -152,6 +152,8 @@ export function Dashboard() {
               <FinancialHighlights symbol={selectedStock} />
             </div>
 
+            <AICrewAnalysis symbol={selectedStock} />
+
             <IndiaFactorPanel symbol={selectedStock} />
           </div>
         </main>
