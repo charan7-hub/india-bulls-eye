@@ -17,9 +17,7 @@ import { StockSearch } from './StockSearch';
 import { StockHeader } from './StockHeader';
 import { PriceChart } from './PriceChart';
 import { Watchlist } from './Watchlist';
-
-import { AIPrediction } from './AIPrediction';
-import { AICrewAnalysis } from './AICrewAnalysis';
+ { AICrewAnalysis } from './AICrewAnalysis';
 import { FinancialHighlights } from './FinancialHighlights';
 import { MarketIntelligence } from './MarketIntelligence';
 import { useWatchlist } from '@/hooks/useWatchlist';
@@ -155,10 +153,7 @@ export function Dashboard() {
             <AICrewAnalysis symbol={selectedStock} />
 
             <IndiaFactorPanel symbol={selectedStock} />
-          </div>
-        </main>
-
-        {/* Right Sidebar - Watchlist */}
+          idebar - Watchlist */}
         <aside className="w-64 border-l border-border bg-sidebar flex-shrink-0">
           <Watchlist
             watchlist={watchlist}
