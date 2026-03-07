@@ -67,10 +67,8 @@ export default function Auth() {
         if (error) {
           toast({ title: 'Sign Up Failed', description: error.message, variant: 'destructive' });
         } else {
-          setPendingEmail(email);
-          setMode('verify-otp');
-          setOtpValue('');
-          toast({ title: 'OTP Sent', description: 'We sent a 6-digit verification code to your email.' });
+          toast({ title: 'Account Created!', description: 'Welcome to StockPulse.' });
+          navigate(from, { replace: true });
         }
       } else {
         const { error } = await signIn(email, password);
