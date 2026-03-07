@@ -83,47 +83,6 @@ export default function Auth() {
     }
   };
 
-  const handleVerifyOtp = async () => {
-    if (otpValue.length !== 6) {
-      toast({ title: 'Invalid OTP', description: 'Please enter the full 6-digit code', variant: 'destructive' });
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      const { error } = await supabase.auth.verifyOtp({
-        email: pendingEmail,
-        token: otpValue,
-        type: 'signup',
-      });
-      if (error) {
-        toast({ title: 'Verification Failed', description: error.message, variant: 'destructive' });
-      } else {
-        toast({ title: 'Email Verified!', description: 'Your account is now active.' });
-        navigate(from, { replace: true });
-      }
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleResendOtp = async () => {
-    setIsSubmitting(true);
-    try {
-      const { error } = await supabase.auth.resend({
-        type: 'signup',
-        email: pendingEmail,
-      });
-      if (error) {
-        toast({ title: 'Resend Failed', description: error.message, variant: 'destructive' });
-      } else {
-        toast({ title: 'OTP Resent', description: 'Check your email for a new verification code.' });
-      }
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   const handleGoogleSignIn = async () => {
     setIsGoogleLoading(true);
     try {
@@ -137,91 +96,6 @@ export default function Auth() {
       setIsGoogleLoading(false);
     }
   };
-
-  // OTP Verification Screen
-  if (mode === 'verify-otp') {
-    return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
-        <div className="fixed inset-0 bg-gradient-to-br from-terminal-cyan/5 via-transparent to-terminal-gold/5 pointer-events-none" />
-
-        <div className="relative z-10 w-full max-w-md space-y-8">
-          <div className="flex flex-col items-center gap-4">
-            <div className="w-16 h-16 bg-gradient-to-br from-terminal-cyan to-terminal-blue flex items-center justify-center shadow-lg shadow-terminal-cyan/20">
-              <ShieldCheck className="h-8 w-8 text-primary-foreground" />
-            </div>
-            <div className="text-center">
-              <h1 className="text-2xl font-bold text-foreground">Verify Your Email</h1>
-              <p className="text-muted-foreground text-sm mt-1">
-                Enter the 6-digit code sent to <span className="text-terminal-cyan font-mono">{pendingEmail}</span>
-              </p>
-            </div>
-          </div>
-
-          <Card className="border-border bg-card/80 backdrop-blur-sm">
-            <CardHeader className="text-center pb-4">
-              <CardTitle className="text-lg">Enter OTP</CardTitle>
-              <CardDescription>Check your inbox (and spam folder)</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex justify-center">
-                <InputOTP
-                  maxLength={6}
-                  value={otpValue}
-                  onChange={(value) => setOtpValue(value)}
-                >
-                  <InputOTPGroup>
-                    <InputOTPSlot index={0} className="w-12 h-14 text-lg font-mono bg-secondary/50 border-border" />
-                    <InputOTPSlot index={1} className="w-12 h-14 text-lg font-mono bg-secondary/50 border-border" />
-                    <InputOTPSlot index={2} className="w-12 h-14 text-lg font-mono bg-secondary/50 border-border" />
-                    <InputOTPSlot index={3} className="w-12 h-14 text-lg font-mono bg-secondary/50 border-border" />
-                    <InputOTPSlot index={4} className="w-12 h-14 text-lg font-mono bg-secondary/50 border-border" />
-                    <InputOTPSlot index={5} className="w-12 h-14 text-lg font-mono bg-secondary/50 border-border" />
-                  </InputOTPGroup>
-                </InputOTP>
-              </div>
-
-              <Button
-                onClick={handleVerifyOtp}
-                className="w-full bg-gradient-to-r from-terminal-cyan to-terminal-blue hover:opacity-90"
-                disabled={isSubmitting || otpValue.length !== 6}
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Verifying...
-                  </>
-                ) : (
-                  <>
-                    Verify & Continue
-                    <ArrowRight className="h-4 w-4 ml-2" />
-                  </>
-                )}
-              </Button>
-
-              <div className="text-center space-y-2">
-                <button
-                  type="button"
-                  onClick={handleResendOtp}
-                  disabled={isSubmitting}
-                  className="text-sm text-terminal-cyan hover:underline disabled:opacity-50"
-                >
-                  Didn't receive it? Resend OTP
-                </button>
-                <br />
-                <button
-                  type="button"
-                  onClick={() => { setMode('signup'); setOtpValue(''); }}
-                  className="text-sm text-muted-foreground hover:text-foreground"
-                >
-                  ← Back to Sign Up
-                </button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
