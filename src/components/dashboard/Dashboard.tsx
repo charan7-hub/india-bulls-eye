@@ -17,7 +17,7 @@ import { StockSearch } from './StockSearch';
 import { StockHeader } from './StockHeader';
 import { PriceChart } from './PriceChart';
 import { Watchlist } from './Watchlist';
- { AICrewAnalysis } from './AICrewAnalysis';
+ import { AICrewAnalysis } from './AICrewAnalysis';
 import { FinancialHighlights } from './FinancialHighlights';
 import { MarketIntelligence } from './MarketIntelligence';
 import { useWatchlist } from '@/hooks/useWatchlist';
