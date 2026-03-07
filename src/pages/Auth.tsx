@@ -18,9 +18,7 @@ export default function Auth() {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-  const [mode, setMode] = useState<'signin' | 'signup' | 'forgot' | 'verify-otp'>('signin');
-  const [otpValue, setOtpValue] = useState('');
-  const [pendingEmail, setPendingEmail] = useState('');
+  const [mode, setMode] = useState<'signin' | 'signup' | 'forgot'>('signin');
 
   const { signIn, signUp, isAuthenticated } = useAuth();
   const navigate = useNavigate();
