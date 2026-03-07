@@ -151,9 +151,10 @@ export function Dashboard() {
             </div>
 
             <AICrewAnalysis symbol={selectedStock} />
+          </div>
+        </main>
 
-            <IndiaFactorPanel symbol={selectedStock} />
-          idebar - Watchlist */}
+        {/* Right S
         <aside className="w-64 border-l border-border bg-sidebar flex-shrink-0">
           <Watchlist
             watchlist={watchlist}
