@@ -69,12 +69,14 @@ export function Dashboard() {
             </div>
           </div>
 
-          <StockSearch
-            onSelectStock={setSelectedStock}
-            selectedStock={selectedStock}
-            isInWatchlist={isInWatchlist}
-            onAddToWatchlist={addToWatchlist}
-          />
+          <div data-tour="search">
+            <StockSearch
+              onSelectStock={setSelectedStock}
+              selectedStock={selectedStock}
+              isInWatchlist={isInWatchlist}
+              onAddToWatchlist={addToWatchlist}
+            />
+          </div>
 
           <div className="flex items-center gap-3 text-xs">
             <Button
