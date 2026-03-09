@@ -163,7 +163,7 @@ export function Dashboard() {
         </main>
 
         {/* Right Sidebar - Watchlist */}
-        <aside className="w-64 border-l border-border bg-sidebar flex-shrink-0">
+        <aside data-tour="watchlist" className="w-64 border-l border-border bg-sidebar flex-shrink-0">
           <Watchlist
             watchlist={watchlist}
             selectedStock={selectedStock}
