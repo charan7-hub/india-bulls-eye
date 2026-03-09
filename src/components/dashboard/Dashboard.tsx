@@ -152,7 +152,9 @@ export function Dashboard() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <AIPrediction symbol={selectedStock} />
+              <div data-tour="ai-prediction">
+                <AIPrediction symbol={selectedStock} />
+              </div>
               <FinancialHighlights symbol={selectedStock} />
             </div>
 
