@@ -147,7 +147,9 @@ export function Dashboard() {
           />
 
           <div className="p-4 space-y-4">
-            <PriceChart symbol={selectedStock} />
+            <div data-tour="price-chart">
+              <PriceChart symbol={selectedStock} />
+            </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <AIPrediction symbol={selectedStock} />
