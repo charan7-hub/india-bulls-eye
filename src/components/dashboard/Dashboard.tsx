@@ -18,6 +18,7 @@ import { StockHeader } from './StockHeader';
 import { PriceChart } from './PriceChart';
 import { Watchlist } from './Watchlist';
 import { AIPrediction } from './AIPrediction';
+import { WelcomeTour } from './WelcomeTour';
 import { AICrewAnalysis } from './AICrewAnalysis';
 import { FinancialHighlights } from './FinancialHighlights';
 import { MarketIntelligence } from './MarketIntelligence';
@@ -53,6 +54,7 @@ export function Dashboard() {
 
   return (
     <div className="min-h-screen bg-background">
+      <WelcomeTour />
       {/* Header with Search */}
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-40">
         <div className="flex items-center justify-between px-4 py-3">
@@ -68,12 +70,14 @@ export function Dashboard() {
             </div>
           </div>
 
-          <StockSearch
-            onSelectStock={setSelectedStock}
-            selectedStock={selectedStock}
-            isInWatchlist={isInWatchlist}
-            onAddToWatchlist={addToWatchlist}
-          />
+          <div data-tour="search">
+            <StockSearch
+              onSelectStock={setSelectedStock}
+              selectedStock={selectedStock}
+              isInWatchlist={isInWatchlist}
+              onAddToWatchlist={addToWatchlist}
+            />
+          </div>
 
           <div className="flex items-center gap-3 text-xs">
             <Button
@@ -131,7 +135,7 @@ export function Dashboard() {
       {/* Main Content */}
       <div className="flex h-[calc(100vh-57px)]">
         {/* Left Sidebar - Live Market News */}
-        <aside className="w-72 border-r border-border bg-sidebar flex-shrink-0 overflow-y-auto terminal-scrollbar">
+        <aside data-tour="market-news" className="w-72 border-r border-border bg-sidebar flex-shrink-0 overflow-y-auto terminal-scrollbar">
           <MarketIntelligence symbol={selectedStock} />
         </aside>
 
@@ -144,10 +148,14 @@ export function Dashboard() {
           />
 
           <div className="p-4 space-y-4">
-            <PriceChart symbol={selectedStock} />
+            <div data-tour="price-chart">
+              <PriceChart symbol={selectedStock} />
+            </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <AIPrediction symbol={selectedStock} />
+              <div data-tour="ai-prediction">
+                <AIPrediction symbol={selectedStock} />
+              </div>
               <FinancialHighlights symbol={selectedStock} />
             </div>
 
@@ -156,7 +164,7 @@ export function Dashboard() {
         </main>
 
         {/* Right Sidebar - Watchlist */}
-        <aside className="w-64 border-l border-border bg-sidebar flex-shrink-0">
+        <aside data-tour="watchlist" className="w-64 border-l border-border bg-sidebar flex-shrink-0">
           <Watchlist
             watchlist={watchlist}
             selectedStock={selectedStock}
