@@ -134,7 +134,7 @@ export function Dashboard() {
       {/* Main Content */}
       <div className="flex h-[calc(100vh-57px)]">
         {/* Left Sidebar - Live Market News */}
-        <aside className="w-72 border-r border-border bg-sidebar flex-shrink-0 overflow-y-auto terminal-scrollbar">
+        <aside data-tour="market-news" className="w-72 border-r border-border bg-sidebar flex-shrink-0 overflow-y-auto terminal-scrollbar">
           <MarketIntelligence symbol={selectedStock} />
         </aside>
 
