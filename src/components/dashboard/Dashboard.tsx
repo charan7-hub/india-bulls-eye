@@ -18,6 +18,7 @@ import { StockHeader } from './StockHeader';
 import { PriceChart } from './PriceChart';
 import { Watchlist } from './Watchlist';
 import { AIPrediction } from './AIPrediction';
+import { WelcomeTour } from './WelcomeTour';
 import { AICrewAnalysis } from './AICrewAnalysis';
 import { FinancialHighlights } from './FinancialHighlights';
 import { MarketIntelligence } from './MarketIntelligence';
