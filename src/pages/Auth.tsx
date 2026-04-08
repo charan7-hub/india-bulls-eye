@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Separator } from '@/components/ui/separator';
 import { ArrowRight, Loader2, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { checkRateLimit, recordAttempt } from '@/lib/rateLimiter';
 
 export default function Auth() {
   const [email, setEmail] = useState('');
