@@ -7,7 +7,6 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
-import ResetPassword from "./pages/ResetPassword";
 import Onboarding from "./pages/Onboarding";
 import Profile from "./pages/Profile";
 import Patterns from "./pages/Patterns";
@@ -24,7 +23,6 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<Auth />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
             <Route
               path="/onboarding"
               element={
