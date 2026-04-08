@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Separator } from '@/components/ui/separator';
 import { ArrowRight, Loader2, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { checkRateLimit, recordAttempt } from '@/lib/rateLimiter';
 
 export default function Auth() {
   const [email, setEmail] = useState('');
@@ -32,6 +33,21 @@ export default function Auth() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Rate limit check for login/signup (not forgot password)
+    if (mode !== 'forgot') {
+      const { allowed, retryAfterMs } = checkRateLimit();
+      if (!allowed) {
+        const seconds = Math.ceil((retryAfterMs || 0) / 1000);
+        toast({
+          title: 'Too many attempts',
+          description: `Please wait ${seconds} seconds before trying again.`,
+          variant: 'destructive',
+        });
+        return;
+      }
+      recordAttempt();
+    }
 
     if (mode === 'forgot') {
       if (!email.trim()) {
