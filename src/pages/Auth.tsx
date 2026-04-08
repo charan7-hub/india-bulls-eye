@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { ArrowRight, Loader2, Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { ArrowRight, Loader2, Mail, Lock, Eye, EyeOff, CheckCircle2, RefreshCw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { checkRateLimit, recordAttempt } from '@/lib/rateLimiter';
 
@@ -18,6 +18,8 @@ export default function Auth() {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isResending, setIsResending] = useState(false);
+  const [showVerifyMessage, setShowVerifyMessage] = useState(false);
   const [mode, setMode] = useState<'signin' | 'signup' | 'forgot'>('signin');
 
   const { signIn, signUp, isAuthenticated } = useAuth();
@@ -30,6 +32,28 @@ export default function Auth() {
   if (isAuthenticated) {
     return <Navigate to={from} replace />;
   }
+
+  const handleResendVerification = async () => {
+    if (!email.trim()) {
+      toast({ title: 'Missing email', description: 'Please enter your email address', variant: 'destructive' });
+      return;
+    }
+    setIsResending(true);
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email,
+        options: { emailRedirectTo: window.location.origin },
+      });
+      if (error) {
+        toast({ title: 'Error', description: error.message, variant: 'destructive' });
+      } else {
+        toast({ title: 'Email sent', description: 'Verification email has been resent. Please check your inbox.' });
+      }
+    } finally {
+      setIsResending(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -83,13 +107,21 @@ export default function Auth() {
         if (error) {
           toast({ title: 'Sign Up Failed', description: error.message, variant: 'destructive' });
         } else {
-          toast({ title: 'Account Created!', description: 'Welcome to StockPulse.' });
-          navigate(from, { replace: true });
+          setShowVerifyMessage(true);
         }
       } else {
         const { error } = await signIn(email, password);
         if (error) {
-          toast({ title: 'Sign In Failed', description: error.message, variant: 'destructive' });
+          if (error.message.toLowerCase().includes('email not confirmed')) {
+            toast({
+              title: 'Email not verified',
+              description: 'Please check your inbox for the confirmation link.',
+              variant: 'destructive',
+            });
+            setShowVerifyMessage(true);
+          } else {
+            toast({ title: 'Sign In Failed', description: error.message, variant: 'destructive' });
+          }
         } else {
           navigate(from, { replace: true });
         }
@@ -112,6 +144,53 @@ export default function Auth() {
       setIsGoogleLoading(false);
     }
   };
+
+  // Show verification pending screen
+  if (showVerifyMessage) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
+        <div className="fixed inset-0 bg-gradient-to-br from-terminal-cyan/5 via-transparent to-terminal-gold/5 pointer-events-none" />
+        <div className="relative z-10 w-full max-w-md space-y-8">
+          <Card className="border-border bg-card/80 backdrop-blur-sm">
+            <CardContent className="pt-8 pb-6 flex flex-col items-center gap-4 text-center">
+              <div className="w-14 h-14 rounded-full bg-terminal-cyan/10 flex items-center justify-center">
+                <CheckCircle2 className="h-7 w-7 text-terminal-cyan" />
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold text-foreground">Check your inbox</h2>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Please check your inbox to verify your email before logging in.
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  We sent a verification link to <span className="font-medium text-foreground">{email}</span>
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleResendVerification}
+                disabled={isResending}
+                className="mt-2"
+              >
+                {isResending ? (
+                  <><Loader2 className="h-3.5 w-3.5 mr-2 animate-spin" />Sending...</>
+                ) : (
+                  <><RefreshCw className="h-3.5 w-3.5 mr-2" />Resend Verification Email</>
+                )}
+              </Button>
+              <button
+                type="button"
+                onClick={() => { setShowVerifyMessage(false); setMode('signin'); }}
+                className="text-sm text-terminal-cyan hover:underline mt-1"
+              >
+                Back to Sign In
+              </button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
