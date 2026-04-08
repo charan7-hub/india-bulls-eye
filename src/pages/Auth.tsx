@@ -34,6 +34,21 @@ export default function Auth() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Rate limit check for login/signup (not forgot password)
+    if (mode !== 'forgot') {
+      const { allowed, retryAfterMs } = checkRateLimit();
+      if (!allowed) {
+        const seconds = Math.ceil((retryAfterMs || 0) / 1000);
+        toast({
+          title: 'Too many attempts',
+          description: `Please wait ${seconds} seconds before trying again.`,
+          variant: 'destructive',
+        });
+        return;
+      }
+      recordAttempt();
+    }
+
     if (mode === 'forgot') {
       if (!email.trim()) {
         toast({ title: 'Missing email', description: 'Please enter your email address', variant: 'destructive' });
