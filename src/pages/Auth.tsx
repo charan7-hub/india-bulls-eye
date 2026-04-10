@@ -42,7 +42,7 @@ export default function Auth() {
       <TradingBackground />
       <div className="fixed inset-0 bg-gradient-to-br from-terminal-cyan/5 via-background/80 to-terminal-gold/5 pointer-events-none" style={{ zIndex: 1 }} />
 
-      <div className="relative z-10 w-full max-w-md space-y-8">
+      <div className="relative w-full max-w-md space-y-8" style={{ zIndex: 2 }}>
         {/* Logo */}
         <div className="flex flex-col items-center gap-4">
           <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-terminal-cyan to-terminal-blue flex items-center justify-center shadow-lg shadow-terminal-cyan/20">
