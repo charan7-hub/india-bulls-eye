@@ -39,7 +39,8 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
-      <div className="fixed inset-0 bg-gradient-to-br from-terminal-cyan/5 via-transparent to-terminal-gold/5 pointer-events-none" />
+      <TradingBackground />
+      <div className="fixed inset-0 bg-gradient-to-br from-terminal-cyan/5 via-background/80 to-terminal-gold/5 pointer-events-none" style={{ zIndex: 1 }} />
 
       <div className="relative z-10 w-full max-w-md space-y-8">
         {/* Logo */}
