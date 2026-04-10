@@ -14,6 +14,7 @@ interface Symbol {
 
 export default function TradingBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const mouseRef = useRef({ x: -1000, y: -1000 });
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -23,6 +24,7 @@ export default function TradingBackground() {
 
     let animationId: number;
     const symbols: Symbol[] = [];
+    const HOVER_RADIUS = 120;
 
     const bullChars = ['▲', '△', '↑', '⬆', '₹', '+', '◆'];
     const bearChars = ['▼', '▽', '↓', '⬇', '−', '◇'];
@@ -36,7 +38,15 @@ export default function TradingBackground() {
     resize();
     window.addEventListener('resize', resize);
 
-    // Initialize symbols
+    const onMouseMove = (e: MouseEvent) => {
+      mouseRef.current = { x: e.clientX, y: e.clientY };
+    };
+    const onMouseLeave = () => {
+      mouseRef.current = { x: -1000, y: -1000 };
+    };
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseleave', onMouseLeave);
+
     const count = Math.floor((canvas.width * canvas.height) / 12000);
     for (let i = 0; i < count; i++) {
       const isBull = Math.random() > 0.45;
@@ -59,12 +69,30 @@ export default function TradingBackground() {
 
     const animate = (time: number) => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const mx = mouseRef.current.x;
+      const my = mouseRef.current.y;
 
       for (const s of symbols) {
-        // Bulls float up, bears float down
         const isBull = greenShades.includes(s.color);
-        s.y += isBull ? -s.speed : s.speed;
-        s.x += s.drift + Math.sin(time * 0.001 + s.phase) * 0.3;
+
+        // Distance to cursor
+        const dx = s.x - mx;
+        const dy = s.y - my;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const nearCursor = dist < HOVER_RADIUS;
+        const proximity = nearCursor ? 1 - dist / HOVER_RADIUS : 0;
+
+        // Speed boost + scatter away from cursor
+        const speedMult = 1 + proximity * 3;
+        s.y += (isBull ? -s.speed : s.speed) * speedMult;
+        s.x += (s.drift + Math.sin(time * 0.001 + s.phase) * 0.3) * speedMult;
+
+        // Gentle push away from cursor
+        if (nearCursor) {
+          const pushStrength = proximity * 1.5;
+          s.x += (dx / dist) * pushStrength;
+          s.y += (dy / dist) * pushStrength;
+        }
 
         // Wrap around
         if (s.y < -30) s.y = canvas.height + 30;
@@ -72,10 +100,11 @@ export default function TradingBackground() {
         if (s.x < -30) s.x = canvas.width + 30;
         if (s.x > canvas.width + 30) s.x = -30;
 
-        // Pulsing opacity
+        // Pulsing opacity — brighter near cursor
         const pulse = 0.6 + 0.4 * Math.sin(time * 0.002 + s.phase);
-        ctx.globalAlpha = s.opacity * pulse;
-        ctx.font = `${s.size}px sans-serif`;
+        const hoverGlow = s.opacity + proximity * 0.25;
+        ctx.globalAlpha = hoverGlow * pulse;
+        ctx.font = `${s.size + proximity * 6}px sans-serif`;
         ctx.fillStyle = s.color;
         ctx.fillText(s.char, s.x, s.y);
       }
@@ -89,14 +118,16 @@ export default function TradingBackground() {
     return () => {
       cancelAnimationFrame(animationId);
       window.removeEventListener('resize', resize);
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseleave', onMouseLeave);
     };
   }, []);
 
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 pointer-events-none"
-      style={{ zIndex: 0 }}
+      className="fixed inset-0"
+      style={{ zIndex: 0, pointerEvents: 'none' }}
     />
   );
 }
