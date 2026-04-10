@@ -5,6 +5,7 @@ import { lovable } from '@/integrations/lovable/index';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
+import TradingBackground from '@/components/TradingBackground';
 import { useToast } from '@/hooks/use-toast';
 
 export default function Auth() {
@@ -38,9 +39,10 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
-      <div className="fixed inset-0 bg-gradient-to-br from-terminal-cyan/5 via-transparent to-terminal-gold/5 pointer-events-none" />
+      <TradingBackground />
+      <div className="fixed inset-0 bg-gradient-to-br from-terminal-cyan/5 via-background/80 to-terminal-gold/5 pointer-events-none" style={{ zIndex: 1 }} />
 
-      <div className="relative z-10 w-full max-w-md space-y-8">
+      <div className="relative w-full max-w-md space-y-8" style={{ zIndex: 2 }}>
         {/* Logo */}
         <div className="flex flex-col items-center gap-4">
           <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-terminal-cyan to-terminal-blue flex items-center justify-center shadow-lg shadow-terminal-cyan/20">
