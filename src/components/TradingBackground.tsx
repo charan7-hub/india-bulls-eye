@@ -23,6 +23,22 @@ interface Particle {
   color: string;
 }
 
+interface Candlestick {
+  open: number;
+  close: number;
+  high: number;
+  low: number;
+}
+
+interface CandleLane {
+  y: number;
+  height: number;
+  speed: number;
+  offset: number;
+  candles: Candlestick[];
+  opacity: number;
+}
+
 export default function TradingBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mouseRef = useRef({ x: -1000, y: -1000 });
@@ -84,6 +100,32 @@ export default function TradingBackground() {
       });
     }
 
+    // Generate candlestick lanes
+    const candleLanes: CandleLane[] = [];
+    const laneCount = 4;
+    for (let i = 0; i < laneCount; i++) {
+      const laneHeight = 40 + Math.random() * 30;
+      const candles: Candlestick[] = [];
+      let price = 50;
+      for (let j = 0; j < 60; j++) {
+        const change = (Math.random() - 0.48) * 8;
+        const open = price;
+        const close = price + change;
+        const high = Math.max(open, close) + Math.random() * 4;
+        const low = Math.min(open, close) - Math.random() * 4;
+        candles.push({ open, close, high, low });
+        price = close;
+      }
+      candleLanes.push({
+        y: (canvas.height / (laneCount + 1)) * (i + 1),
+        height: laneHeight,
+        speed: 0.15 + Math.random() * 0.2,
+        offset: Math.random() * 600,
+        candles,
+        opacity: 0.04 + Math.random() * 0.03,
+      });
+    }
+
     const spawnParticles = () => {
       const mx = mouseRef.current.x;
       const my = mouseRef.current.y;
@@ -98,7 +140,6 @@ export default function TradingBackground() {
       const spawnCount = Math.min(Math.floor(moveDist / 8) + 1, 3);
       for (let i = 0; i < spawnCount; i++) {
         if (particles.length >= MAX_PARTICLES) {
-          // Recycle oldest
           const oldest = particles.reduce((a, b) => (a.life < b.life ? a : b));
           const idx = particles.indexOf(oldest);
           particles.splice(idx, 1);
@@ -118,10 +159,64 @@ export default function TradingBackground() {
       }
     };
 
+    const drawCandlesticks = (time: number) => {
+      const candleWidth = 8;
+      const candleGap = 4;
+      const totalCandleWidth = candleWidth + candleGap;
+
+      for (const lane of candleLanes) {
+        lane.offset += lane.speed;
+        const totalWidth = lane.candles.length * totalCandleWidth;
+        if (lane.offset > totalWidth) lane.offset -= totalWidth;
+
+        ctx.globalAlpha = lane.opacity;
+
+        // Find price range for normalization
+        let minPrice = Infinity, maxPrice = -Infinity;
+        for (const c of lane.candles) {
+          if (c.low < minPrice) minPrice = c.low;
+          if (c.high > maxPrice) maxPrice = c.high;
+        }
+        const priceRange = maxPrice - minPrice || 1;
+
+        for (let j = 0; j < lane.candles.length; j++) {
+          const c = lane.candles[j];
+          const x = -lane.offset + j * totalCandleWidth;
+          // Wrap around
+          const wrappedX = ((x % totalWidth) + totalWidth) % totalWidth - totalCandleWidth;
+          if (wrappedX < -totalCandleWidth || wrappedX > canvas.width + totalCandleWidth) continue;
+
+          const isBullish = c.close >= c.open;
+          const color = isBullish ? '#00e676' : '#ff1744';
+
+          const bodyTop = lane.y - ((Math.max(c.open, c.close) - minPrice) / priceRange) * lane.height;
+          const bodyBottom = lane.y - ((Math.min(c.open, c.close) - minPrice) / priceRange) * lane.height;
+          const wickTop = lane.y - ((c.high - minPrice) / priceRange) * lane.height;
+          const wickBottom = lane.y - ((c.low - minPrice) / priceRange) * lane.height;
+
+          // Wick
+          ctx.strokeStyle = color;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(wrappedX + candleWidth / 2, wickTop);
+          ctx.lineTo(wrappedX + candleWidth / 2, wickBottom);
+          ctx.stroke();
+
+          // Body
+          ctx.fillStyle = color;
+          const bodyHeight = Math.max(bodyBottom - bodyTop, 1);
+          ctx.fillRect(wrappedX, bodyTop, candleWidth, bodyHeight);
+        }
+      }
+    };
+
     const animate = (time: number) => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       const mx = mouseRef.current.x;
       const my = mouseRef.current.y;
+
+      // Draw candlestick lanes first (behind everything)
+      drawCandlesticks(time);
 
       // Spawn trail particles
       spawnParticles();
