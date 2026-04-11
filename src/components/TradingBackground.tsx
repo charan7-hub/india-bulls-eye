@@ -23,6 +23,22 @@ interface Particle {
   color: string;
 }
 
+interface Candlestick {
+  open: number;
+  close: number;
+  high: number;
+  low: number;
+}
+
+interface CandleLane {
+  y: number;
+  height: number;
+  speed: number;
+  offset: number;
+  candles: Candlestick[];
+  opacity: number;
+}
+
 export default function TradingBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mouseRef = useRef({ x: -1000, y: -1000 });
