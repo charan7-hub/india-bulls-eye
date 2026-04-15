@@ -6,12 +6,15 @@ export interface LivePriceData {
   price_movement: {
     value: number;
     percentage: number;
-    movement: string; // "Up" | "Down"
+    movement: string;
   } | null;
   market_trading: string | null;
   market_closed: string | null;
   title: string | null;
   previous_close: number | null;
+  key_stats: Record<string, any> | null;
+  financials: Record<string, any> | null;
+  graph: Array<{ price: number; date?: string; volume?: number }> | null;
 }
 
 interface UseLivePriceReturn {
@@ -56,6 +59,9 @@ export function useLivePrice(symbol: string, exchange: string = 'NSE'): UseLiveP
         market_closed: result.market_closed,
         title: result.title,
         previous_close: result.previous_close,
+        key_stats: result.key_stats || null,
+        financials: result.financials || null,
+        graph: result.graph || null,
       };
 
       cache.set(key, { data: liveData, ts: Date.now() });
