@@ -43,6 +43,9 @@ Deno.serve(async (req) => {
     const data = await response.json();
     const summary = data.summary || {};
     const market = data.market || {};
+    const keyStats = data.key_stats || {};
+    const financials = data.financials || {};
+    const graph = data.graph || [];
 
     const result = {
       symbol,
@@ -54,6 +57,11 @@ Deno.serve(async (req) => {
       market_trading: market.trading || null,
       market_closed: market.closed || null,
       previous_close: summary.previous_close ?? null,
+      // Financial data
+      key_stats: keyStats,
+      financials: financials,
+      // Intraday graph data
+      graph: graph,
     };
 
     return new Response(JSON.stringify(result), {
