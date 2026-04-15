@@ -1,23 +1,28 @@
-import { TrendingUp, TrendingDown, Plus, Star, Wifi, WifiOff } from 'lucide-react';
+import { TrendingUp, TrendingDown, Plus, Star, WifiOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getStock, formatPrice, formatPercentage } from '@/lib/stockData';
-import { useLivePrice } from '@/hooks/useLivePrice';
+import { LivePriceData } from '@/hooks/useLivePrice';
 import { cn } from '@/lib/utils';
 
 interface StockHeaderProps {
   symbol: string;
   isInWatchlist: boolean;
   onToggleWatchlist: () => void;
+  liveData: LivePriceData | null;
+  liveLoading: boolean;
+  liveError: string | null;
 }
 
 export function StockHeader({
   symbol,
   isInWatchlist,
   onToggleWatchlist,
+  liveData: live,
+  liveLoading: loading,
+  liveError: error,
 }: StockHeaderProps) {
   const stock = getStock(symbol);
-  const { data: live, loading, error } = useLivePrice(symbol, stock?.exchange || 'NSE');
 
   if (!stock) {
     return (
@@ -27,7 +32,6 @@ export function StockHeader({
     );
   }
 
-  // Use live data when available, fallback to mock
   const currentPrice = live?.extracted_price ?? stock.currentPrice;
   const priceChange = live?.price_movement
     ? live.price_movement.value
@@ -52,7 +56,6 @@ export function StockHeader({
             <span className="text-xs px-2 py-1 rounded-none bg-secondary text-secondary-foreground">
               {stock.sector}
             </span>
-            {/* Live indicator */}
             {!loading && !error && live && (
               <span className="flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-none bg-terminal-green/10 text-terminal-green font-mono">
                 <span className="w-1.5 h-1.5 bg-terminal-green animate-pulse" />
@@ -72,7 +75,6 @@ export function StockHeader({
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Market status badge */}
           {marketStatus && (
             <span
               className={cn(

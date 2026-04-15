@@ -23,6 +23,8 @@ import { AICrewAnalysis } from './AICrewAnalysis';
 import { FinancialHighlights } from './FinancialHighlights';
 import { MarketIntelligence } from './MarketIntelligence';
 import { useWatchlist } from '@/hooks/useWatchlist';
+import { useLivePrice } from '@/hooks/useLivePrice';
+import { getStock } from '@/lib/stockData';
 
 export function Dashboard() {
   const [selectedStock, setSelectedStock] = useState('RELIANCE');
@@ -31,6 +33,12 @@ export function Dashboard() {
   const { watchlist, addToWatchlist, removeFromWatchlist, isInWatchlist } =
     useWatchlist();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+
+  const stock = getStock(selectedStock);
+  const { data: liveData, loading: liveLoading, error: liveError, refetch } = useLivePrice(
+    selectedStock,
+    stock?.exchange || 'NSE'
+  );
 
   useEffect(() => {
     if (!user) return;
@@ -145,18 +153,30 @@ export function Dashboard() {
             symbol={selectedStock}
             isInWatchlist={isInWatchlist(selectedStock)}
             onToggleWatchlist={handleToggleWatchlist}
+            liveData={liveData}
+            liveLoading={liveLoading}
+            liveError={liveError}
           />
 
           <div className="p-4 space-y-4">
             <div data-tour="price-chart">
-              <PriceChart symbol={selectedStock} />
+              <PriceChart
+                symbol={selectedStock}
+                liveGraph={liveData?.graph || null}
+                liveLoading={liveLoading}
+                livePrice={liveData?.extracted_price || null}
+              />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div data-tour="ai-prediction">
                 <AIPrediction symbol={selectedStock} />
               </div>
-              <FinancialHighlights symbol={selectedStock} />
+              <FinancialHighlights
+                symbol={selectedStock}
+                liveData={liveData}
+                liveLoading={liveLoading}
+              />
             </div>
 
             <AICrewAnalysis symbol={selectedStock} />

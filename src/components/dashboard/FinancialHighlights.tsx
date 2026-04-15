@@ -1,15 +1,59 @@
 import { useState } from 'react';
 import { IndianRupee, TrendingUp, Percent, Scale, PiggyBank, ArrowUpCircle, ArrowDownCircle, Info } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 import { getStock, formatIndianNumber, formatPrice } from '@/lib/stockData';
 import { cn } from '@/lib/utils';
 import { MetricExplanationDialog, MetricType } from './MetricExplanationDialog';
+import { LivePriceData } from '@/hooks/useLivePrice';
 
 interface FinancialHighlightsProps {
   symbol: string;
+  liveData?: LivePriceData | null;
+  liveLoading?: boolean;
 }
 
-export function FinancialHighlights({ symbol }: FinancialHighlightsProps) {
+// Helper to extract a numeric value from SerpApi key_stats/financials
+function extractLiveValue(obj: Record<string, any> | null, ...keys: string[]): number | null {
+  if (!obj) return null;
+  for (const key of keys) {
+    // Try direct match
+    if (obj[key] !== undefined && obj[key] !== null) {
+      const v = typeof obj[key] === 'object' ? obj[key].value ?? obj[key].extracted_value : obj[key];
+      if (typeof v === 'number') return v;
+      if (typeof v === 'string') {
+        const n = parseFloat(v.replace(/[₹,%]/g, '').trim());
+        if (!isNaN(n)) return n;
+      }
+    }
+    // Try nested results array (SerpApi financials format)
+    if (obj.results) {
+      for (const item of obj.results) {
+        if (item.title?.toLowerCase().includes(key.toLowerCase()) || item.snippet?.label?.toLowerCase().includes(key.toLowerCase())) {
+          const v = item.snippet?.value ?? item.extracted_value;
+          if (typeof v === 'number') return v;
+          if (typeof v === 'string') {
+            const n = parseFloat(v.replace(/[₹,%]/g, '').trim());
+            if (!isNaN(n)) return n;
+          }
+        }
+      }
+    }
+  }
+  return null;
+}
+
+function extractMarketCap(keyStats: Record<string, any> | null, financials: Record<string, any> | null): number | null {
+  const sources = [keyStats, financials];
+  for (const src of sources) {
+    if (!src) continue;
+    const val = extractLiveValue(src, 'market_cap', 'market cap', 'Market cap');
+    if (val !== null) return val;
+  }
+  return null;
+}
+
+export function FinancialHighlights({ symbol, liveData, liveLoading }: FinancialHighlightsProps) {
   const stock = getStock(symbol);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedMetric, setSelectedMetric] = useState<MetricType | null>(null);
@@ -19,7 +63,19 @@ export function FinancialHighlights({ symbol }: FinancialHighlightsProps) {
     return null;
   }
 
-  const peVsIndustry = stock.peRatio - stock.industryPE;
+  // Extract live financial values
+  const livePE = extractLiveValue(liveData?.key_stats || null, 'pe_ratio', 'P/E ratio', 'pe ratio') ??
+                 extractLiveValue(liveData?.financials || null, 'pe_ratio', 'P/E ratio');
+  const liveDividendYield = extractLiveValue(liveData?.key_stats || null, 'dividend_yield', 'Dividend yield', 'dividend yield') ??
+                            extractLiveValue(liveData?.financials || null, 'dividend_yield', 'Dividend yield');
+  const liveMarketCap = extractMarketCap(liveData?.key_stats || null, liveData?.financials || null);
+
+  // Use live values with fallback to mock
+  const peRatio = livePE ?? stock.peRatio;
+  const dividendYield = liveDividendYield ?? stock.dividendYield;
+  const marketCap = liveMarketCap ?? stock.marketCap;
+
+  const peVsIndustry = peRatio - stock.industryPE;
   const isUndervalued = peVsIndustry < 0;
 
   const handleMetricClick = (metricType: MetricType, value: string) => {
@@ -28,20 +84,22 @@ export function FinancialHighlights({ symbol }: FinancialHighlightsProps) {
     setDialogOpen(true);
   };
 
-  // Calculate distance from ATH/ATL
   const distanceFromATH = ((stock.allTimeHigh - stock.currentPrice) / stock.allTimeHigh) * 100;
   const distanceFromATL = ((stock.currentPrice - stock.allTimeLow) / stock.allTimeLow) * 100;
+
+  const isLive = !!(liveData && (livePE !== null || liveDividendYield !== null || liveMarketCap !== null));
 
   const metrics = [
     {
       label: 'TTM P/E Ratio',
-      value: stock.peRatio > 0 ? stock.peRatio.toFixed(1) : 'N/A',
+      value: peRatio > 0 ? peRatio.toFixed(1) : 'N/A',
       subtext: `Industry: ${stock.industryPE.toFixed(1)}`,
       icon: TrendingUp,
-      highlight: stock.peRatio > 0 && stock.peRatio < stock.industryPE,
+      highlight: peRatio > 0 && peRatio < stock.industryPE,
       metricType: 'pe-ratio' as MetricType,
       clickable: true,
-      comparison: stock.peRatio > 0 ? (
+      live: livePE !== null,
+      comparison: peRatio > 0 ? (
         <span
           className={cn(
             'text-xs',
@@ -54,12 +112,13 @@ export function FinancialHighlights({ symbol }: FinancialHighlightsProps) {
     },
     {
       label: 'Dividend Yield',
-      value: `${stock.dividendYield.toFixed(2)}%`,
-      subtext: stock.dividendYield > 0 ? 'Annual yield' : 'No dividend',
+      value: `${dividendYield.toFixed(2)}%`,
+      subtext: dividendYield > 0 ? 'Annual yield' : 'No dividend',
       icon: Percent,
-      highlight: stock.dividendYield > 1.5,
+      highlight: dividendYield > 1.5,
       metricType: 'dividend-yield' as MetricType,
       clickable: true,
+      live: liveDividendYield !== null,
     },
     {
       label: 'Debt/Equity',
@@ -74,15 +133,17 @@ export function FinancialHighlights({ symbol }: FinancialHighlightsProps) {
       highlight: stock.debtToEquity < 0.5,
       metricType: 'debt-equity' as MetricType,
       clickable: true,
+      live: false,
     },
     {
       label: 'Market Cap',
-      value: formatIndianNumber(stock.marketCap * 10000000).replace('₹', ''),
+      value: formatIndianNumber(marketCap * 10000000).replace('₹', ''),
       subtext: 'In Crores',
       icon: PiggyBank,
       prefix: '₹',
       metricType: 'market-cap' as MetricType,
       clickable: true,
+      live: liveMarketCap !== null,
     },
     {
       label: 'Historical Peak',
@@ -93,6 +154,7 @@ export function FinancialHighlights({ symbol }: FinancialHighlightsProps) {
       metricType: 'ath' as MetricType,
       clickable: true,
       highlight: distanceFromATH < 10,
+      live: false,
       comparison: (
         <span className={cn(
           'text-xs',
@@ -110,6 +172,7 @@ export function FinancialHighlights({ symbol }: FinancialHighlightsProps) {
       prefix: '₹',
       metricType: 'atl' as MetricType,
       clickable: true,
+      live: false,
       comparison: (
         <span className="text-xs text-terminal-green">
           {distanceFromATL.toFixed(0)}% above
@@ -125,6 +188,12 @@ export function FinancialHighlights({ symbol }: FinancialHighlightsProps) {
           <CardTitle className="text-sm font-medium flex items-center gap-2">
             <IndianRupee className="h-4 w-4 text-terminal-gold" />
             Financial Highlights
+            {isLive && (
+              <span className="flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-none bg-terminal-green/10 text-terminal-green font-mono">
+                <span className="w-1.5 h-1.5 bg-terminal-green animate-pulse" />
+                LIVE
+              </span>
+            )}
             <span className="ml-auto text-xs text-muted-foreground font-normal flex items-center gap-1">
               <Info className="h-3 w-3" />
               Click for details
@@ -138,15 +207,23 @@ export function FinancialHighlights({ symbol }: FinancialHighlightsProps) {
                 key={metric.label}
                 onClick={() => handleMetricClick(metric.metricType, `${metric.prefix || ''}${metric.value}`)}
                 className={cn(
-                  'p-3 rounded-lg bg-secondary/50 border border-border text-left transition-all',
+                  'p-3 rounded-none bg-secondary/50 border border-border text-left transition-all relative',
                   'hover:bg-secondary hover:border-terminal-cyan/50 hover:shadow-md hover:shadow-terminal-cyan/10',
                   'focus:outline-none focus:ring-2 focus:ring-terminal-cyan/50',
                   metric.highlight && 'border-terminal-green/50'
                 )}
               >
+                {liveLoading && (
+                  <div className="absolute inset-0 bg-background/60 flex items-center justify-center z-10">
+                    <div className="w-4 h-4 border-2 border-terminal-cyan border-t-transparent animate-spin" />
+                  </div>
+                )}
                 <div className="flex items-center gap-1.5 mb-1">
                   <metric.icon className="h-3.5 w-3.5 text-muted-foreground" />
                   <span className="text-xs text-muted-foreground">{metric.label}</span>
+                  {metric.live && (
+                    <span className="w-1 h-1 bg-terminal-green rounded-full ml-auto" />
+                  )}
                 </div>
                 <p className="text-lg font-bold font-mono">
                   {metric.prefix || ''}
@@ -162,7 +239,9 @@ export function FinancialHighlights({ symbol }: FinancialHighlightsProps) {
 
           <div className="mt-3 pt-3 border-t border-border">
             <p className="text-xs text-muted-foreground">
-              All figures based on trailing twelve months (TTM). Market cap in ₹ Crores. ATH/ATL are inflation-adjusted.
+              {isLive
+                ? 'Metrics marked with a green dot are sourced from live market data. Others use trailing twelve months (TTM).'
+                : 'All figures based on trailing twelve months (TTM). Market cap in ₹ Crores. ATH/ATL are inflation-adjusted.'}
             </p>
           </div>
         </CardContent>
