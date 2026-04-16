@@ -11,7 +11,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { symbol, exchange } = await req.json();
+    const { symbol, exchange, window } = await req.json();
 
     if (!symbol || typeof symbol !== 'string') {
       return new Response(JSON.stringify({ error: 'symbol is required' }), {
@@ -33,6 +33,11 @@ Deno.serve(async (req) => {
     url.searchParams.set('engine', 'google_finance');
     url.searchParams.set('q', ticker);
     url.searchParams.set('api_key', apiKey);
+
+    // Support window parameter for historical data: "1D", "5D", "1M", "6M", "YTD", "1Y", "5Y", "MAX"
+    if (window) {
+      url.searchParams.set('window', window);
+    }
 
     const response = await fetch(url.toString());
     if (!response.ok) {
@@ -57,11 +62,10 @@ Deno.serve(async (req) => {
       market_trading: market.trading || null,
       market_closed: market.closed || null,
       previous_close: summary.previous_close ?? null,
-      // Financial data
       key_stats: keyStats,
       financials: financials,
-      // Intraday graph data
       graph: graph,
+      window: window || '1D',
     };
 
     return new Response(JSON.stringify(result), {
