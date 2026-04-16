@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, User, Settings, CandlestickChart } from 'lucide-react';
+import { LogOut, User, Settings, CandlestickChart, Activity } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -96,6 +96,15 @@ export function Dashboard() {
             >
               <CandlestickChart className="h-3.5 w-3.5" />
               Patterns
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+              onClick={() => navigate('/indicators')}
+            >
+              <Activity className="h-3.5 w-3.5" />
+              Indicators
             </Button>
             <div className="flex items-center gap-1.5 px-2 py-1 bg-terminal-green/10 text-terminal-green">
               <span className="w-1.5 h-1.5 bg-terminal-green animate-pulse"></span>

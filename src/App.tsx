@@ -10,6 +10,7 @@ import Auth from "./pages/Auth";
 import Onboarding from "./pages/Onboarding";
 import Profile from "./pages/Profile";
 import Patterns from "./pages/Patterns";
+import Indicators from "./pages/Indicators";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -44,6 +45,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Patterns />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/indicators"
+              element={
+                <ProtectedRoute>
+                  <Indicators />
                 </ProtectedRoute>
               }
             />
