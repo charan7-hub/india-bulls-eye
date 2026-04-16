@@ -15,6 +15,7 @@ export interface LivePriceData {
   key_stats: Record<string, any> | null;
   financials: Record<string, any> | null;
   graph: Array<{ price: number; date?: string; volume?: number }> | null;
+  window?: string;
 }
 
 interface UseLivePriceReturn {
@@ -27,13 +28,13 @@ interface UseLivePriceReturn {
 const cache = new Map<string, { data: LivePriceData; ts: number }>();
 const CACHE_TTL = 60_000; // 1 minute
 
-export function useLivePrice(symbol: string, exchange: string = 'NSE'): UseLivePriceReturn {
+export function useLivePrice(symbol: string, exchange: string = 'NSE', window?: string): UseLivePriceReturn {
   const [data, setData] = useState<LivePriceData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchPrice = useCallback(async () => {
-    const key = `${symbol}:${exchange}`;
+    const key = `${symbol}:${exchange}:${window || '1D'}`;
     const cached = cache.get(key);
     if (cached && Date.now() - cached.ts < CACHE_TTL) {
       setData(cached.data);
@@ -45,8 +46,11 @@ export function useLivePrice(symbol: string, exchange: string = 'NSE'): UseLiveP
     setError(null);
 
     try {
+      const body: Record<string, string> = { symbol, exchange };
+      if (window) body.window = window;
+
       const { data: result, error: fnError } = await supabase.functions.invoke('stock-price', {
-        body: { symbol, exchange },
+        body,
       });
 
       if (fnError) throw new Error(fnError.message);
@@ -62,6 +66,7 @@ export function useLivePrice(symbol: string, exchange: string = 'NSE'): UseLiveP
         key_stats: result.key_stats || null,
         financials: result.financials || null,
         graph: result.graph || null,
+        window: result.window || '1D',
       };
 
       cache.set(key, { data: liveData, ts: Date.now() });
@@ -72,7 +77,7 @@ export function useLivePrice(symbol: string, exchange: string = 'NSE'): UseLiveP
     } finally {
       setLoading(false);
     }
-  }, [symbol, exchange]);
+  }, [symbol, exchange, window]);
 
   useEffect(() => {
     fetchPrice();
