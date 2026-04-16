@@ -171,8 +171,8 @@ export function Dashboard() {
             <div data-tour="price-chart">
               <PriceChart
                 symbol={selectedStock}
-                liveGraph={liveData?.graph || null}
-                liveLoading={liveLoading}
+                exchange={stock?.exchange || 'NSE'}
+                mainLiveLoading={liveLoading}
                 livePrice={liveData?.extracted_price || null}
               />
             </div>
