@@ -5,3 +5,9 @@ verify_jwt = false
 
 [functions.stock-analysis]
 verify_jwt = false
+
+[functions.stock-price]
+verify_jwt = false
+
+[functions.pattern-explain]
+verify_jwt = false
