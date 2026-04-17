@@ -26,6 +26,13 @@ export function StockHeader({
 }: StockHeaderProps) {
   const stock = getStock(symbol);
 
+  // Accurate IST-based market status; refresh every 30s. Hooks must run before any early return.
+  const [marketStatus, setMarketStatus] = useState(() => getIndianMarketStatus());
+  useEffect(() => {
+    const id = setInterval(() => setMarketStatus(getIndianMarketStatus()), 30_000);
+    return () => clearInterval(id);
+  }, []);
+
   if (!stock) {
     return (
       <div className="p-4 border-b border-border">
@@ -42,13 +49,6 @@ export function StockHeader({
     ? live.price_movement.percentage
     : ((stock.currentPrice - stock.previousClose) / stock.previousClose) * 100;
   const isPositive = priceChange >= 0;
-
-  // Accurate IST-based market status; refresh every 30s
-  const [marketStatus, setMarketStatus] = useState(() => getIndianMarketStatus());
-  useEffect(() => {
-    const id = setInterval(() => setMarketStatus(getIndianMarketStatus()), 30_000);
-    return () => clearInterval(id);
-  }, []);
 
   return (
     <div className="p-4 border-b border-border bg-card">
