@@ -94,7 +94,6 @@ export function PriceChart({ symbol, exchange = 'NSE', livePrice, mainLiveLoadin
   const pendingPointRef = useRef<{ time: number; price: number } | null>(null);
 
   const [timeframe, setTimeframe] = useState<Timeframe>('1D');
-  const [showSMA, setShowSMA] = useState(true);
   const [activePattern, setActivePattern] = useState<DetectedPattern | null>(null);
   const [aiExplanation, setAiExplanation] = useState<string | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
@@ -268,33 +267,6 @@ export function PriceChart({ symbol, exchange = 'NSE', livePrice, mainLiveLoadin
         color: c.close >= c.open ? 'hsla(142, 70%, 50%, 0.3)' : 'hsla(0, 75%, 55%, 0.3)',
       }))
     );
-
-    if (showSMA && candleData.length >= 20) {
-      const sma20 = candleData.map((d, i) => {
-        if (i < 20) return null;
-        const sum = candleData.slice(i - 20, i).reduce((a, c) => a + c.close, 0);
-        return { time: d.time as UTCTimestamp, value: sum / 20 };
-      }).filter(Boolean) as { time: UTCTimestamp; value: number }[];
-      if (sma20.length > 0) {
-        chart.addSeries(LineSeries, {
-          color: 'hsl(187, 100%, 50%)', lineWidth: 1,
-          priceLineVisible: false, lastValueVisible: false,
-        }).setData(sma20);
-      }
-      if (candleData.length >= 50) {
-        const sma50 = candleData.map((d, i) => {
-          if (i < 50) return null;
-          const sum = candleData.slice(i - 50, i).reduce((a, c) => a + c.close, 0);
-          return { time: d.time as UTCTimestamp, value: sum / 50 };
-        }).filter(Boolean) as { time: UTCTimestamp; value: number }[];
-        if (sma50.length > 0) {
-          chart.addSeries(LineSeries, {
-            color: 'hsl(45, 100%, 55%)', lineWidth: 1,
-            priceLineVisible: false, lastValueVisible: false,
-          }).setData(sma50);
-        }
-      }
-    }
 
     if (detectedPatterns.length > 0) {
       const markers: SeriesMarker<Time>[] = detectedPatterns.map((p) => ({
