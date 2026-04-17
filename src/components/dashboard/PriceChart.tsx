@@ -94,7 +94,6 @@ export function PriceChart({ symbol, exchange = 'NSE', livePrice, mainLiveLoadin
   const pendingPointRef = useRef<{ time: number; price: number } | null>(null);
 
   const [timeframe, setTimeframe] = useState<Timeframe>('1D');
-  const [showSMA, setShowSMA] = useState(true);
   const [activePattern, setActivePattern] = useState<DetectedPattern | null>(null);
   const [aiExplanation, setAiExplanation] = useState<string | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
@@ -269,33 +268,6 @@ export function PriceChart({ symbol, exchange = 'NSE', livePrice, mainLiveLoadin
       }))
     );
 
-    if (showSMA && candleData.length >= 20) {
-      const sma20 = candleData.map((d, i) => {
-        if (i < 20) return null;
-        const sum = candleData.slice(i - 20, i).reduce((a, c) => a + c.close, 0);
-        return { time: d.time as UTCTimestamp, value: sum / 20 };
-      }).filter(Boolean) as { time: UTCTimestamp; value: number }[];
-      if (sma20.length > 0) {
-        chart.addSeries(LineSeries, {
-          color: 'hsl(187, 100%, 50%)', lineWidth: 1,
-          priceLineVisible: false, lastValueVisible: false,
-        }).setData(sma20);
-      }
-      if (candleData.length >= 50) {
-        const sma50 = candleData.map((d, i) => {
-          if (i < 50) return null;
-          const sum = candleData.slice(i - 50, i).reduce((a, c) => a + c.close, 0);
-          return { time: d.time as UTCTimestamp, value: sum / 50 };
-        }).filter(Boolean) as { time: UTCTimestamp; value: number }[];
-        if (sma50.length > 0) {
-          chart.addSeries(LineSeries, {
-            color: 'hsl(45, 100%, 55%)', lineWidth: 1,
-            priceLineVisible: false, lastValueVisible: false,
-          }).setData(sma50);
-        }
-      }
-    }
-
     if (detectedPatterns.length > 0) {
       const markers: SeriesMarker<Time>[] = detectedPatterns.map((p) => ({
         time: p.candleTime as UTCTimestamp,
@@ -335,7 +307,7 @@ export function PriceChart({ symbol, exchange = 'NSE', livePrice, mainLiveLoadin
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [symbol, timeframe, showSMA, candleData, detectedPatterns]);
+  }, [symbol, timeframe, candleData, detectedPatterns]);
 
   // Re-render drawings when they change (without rebuilding the whole chart)
   useEffect(() => {
@@ -468,13 +440,6 @@ export function PriceChart({ symbol, exchange = 'NSE', livePrice, mainLiveLoadin
                 </Button>
               ))}
             </div>
-            <Button
-              variant={showSMA ? 'secondary' : 'outline'} size="sm"
-              onClick={() => setShowSMA(!showSMA)}
-              className="h-7 px-3 text-xs rounded-none"
-            >
-              SMA 20/50
-            </Button>
           </div>
         </div>
 
@@ -524,16 +489,6 @@ export function PriceChart({ symbol, exchange = 'NSE', livePrice, mainLiveLoadin
             <span className="w-3 h-2 bg-terminal-red inline-block" />
             Candles
           </span>
-          {showSMA && (
-            <>
-              <span className="flex items-center gap-1">
-                <span className="w-3 h-0.5 bg-terminal-cyan" /> SMA 20
-              </span>
-              <span className="flex items-center gap-1">
-                <span className="w-3 h-0.5 bg-terminal-gold" /> SMA 50
-              </span>
-            </>
-          )}
         </div>
       </CardHeader>
       <CardContent className="p-0">
