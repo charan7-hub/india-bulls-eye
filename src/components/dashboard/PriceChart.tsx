@@ -307,7 +307,7 @@ export function PriceChart({ symbol, exchange = 'NSE', livePrice, mainLiveLoadin
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [symbol, timeframe, showSMA, candleData, detectedPatterns]);
+  }, [symbol, timeframe, candleData, detectedPatterns]);
 
   // Re-render drawings when they change (without rebuilding the whole chart)
   useEffect(() => {
@@ -440,13 +440,6 @@ export function PriceChart({ symbol, exchange = 'NSE', livePrice, mainLiveLoadin
                 </Button>
               ))}
             </div>
-            <Button
-              variant={showSMA ? 'secondary' : 'outline'} size="sm"
-              onClick={() => setShowSMA(!showSMA)}
-              className="h-7 px-3 text-xs rounded-none"
-            >
-              SMA 20/50
-            </Button>
           </div>
         </div>
 
@@ -496,16 +489,6 @@ export function PriceChart({ symbol, exchange = 'NSE', livePrice, mainLiveLoadin
             <span className="w-3 h-2 bg-terminal-red inline-block" />
             Candles
           </span>
-          {showSMA && (
-            <>
-              <span className="flex items-center gap-1">
-                <span className="w-3 h-0.5 bg-terminal-cyan" /> SMA 20
-              </span>
-              <span className="flex items-center gap-1">
-                <span className="w-3 h-0.5 bg-terminal-gold" /> SMA 50
-              </span>
-            </>
-          )}
         </div>
       </CardHeader>
       <CardContent className="p-0">
