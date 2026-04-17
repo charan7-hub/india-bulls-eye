@@ -61,7 +61,7 @@ export function useChartDrawings(symbol: string, exchange: string = 'NSE') {
   );
 
   const addDrawing = useCallback(
-    (d: Omit<Drawing, 'id' | 'createdAt'> & Partial<Pick<Drawing, 'id' | 'createdAt'>>) => {
+    (d: { type: Drawing['type']; id?: string; createdAt?: number } & Record<string, unknown>) => {
       const drawing = {
         ...d,
         id: d.id || `${d.type}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
