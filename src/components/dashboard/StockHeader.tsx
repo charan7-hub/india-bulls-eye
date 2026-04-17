@@ -1,9 +1,11 @@
+import { useEffect, useState } from 'react';
 import { TrendingUp, TrendingDown, Plus, Star, WifiOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getStock, formatPrice, formatPercentage } from '@/lib/stockData';
 import { LivePriceData } from '@/hooks/useLivePrice';
 import { cn } from '@/lib/utils';
+import { getIndianMarketStatus } from '@/lib/marketStatus';
 
 interface StockHeaderProps {
   symbol: string;
@@ -40,7 +42,13 @@ export function StockHeader({
     ? live.price_movement.percentage
     : ((stock.currentPrice - stock.previousClose) / stock.previousClose) * 100;
   const isPositive = priceChange >= 0;
-  const marketStatus = live?.market_trading || live?.market_closed || null;
+
+  // Accurate IST-based market status; refresh every 30s
+  const [marketStatus, setMarketStatus] = useState(() => getIndianMarketStatus());
+  useEffect(() => {
+    const id = setInterval(() => setMarketStatus(getIndianMarketStatus()), 30_000);
+    return () => clearInterval(id);
+  }, []);
 
   return (
     <div className="p-4 border-b border-border bg-card">
@@ -75,18 +83,23 @@ export function StockHeader({
         </div>
 
         <div className="flex items-center gap-2">
-          {marketStatus && (
+          <span
+            className={cn(
+              'flex items-center gap-1.5 text-[10px] px-2 py-1 rounded-none font-mono',
+              marketStatus.isOpen
+                ? 'bg-terminal-green/10 text-terminal-green'
+                : 'bg-muted text-muted-foreground'
+            )}
+            title={`${marketStatus.reason} · IST ${marketStatus.istTime}`}
+          >
             <span
               className={cn(
-                'text-[10px] px-2 py-1 rounded-none font-mono',
-                marketStatus.toLowerCase().includes('open') || marketStatus.toLowerCase().includes('pre')
-                  ? 'bg-terminal-green/10 text-terminal-green'
-                  : 'bg-muted text-muted-foreground'
+                'w-1.5 h-1.5 rounded-full',
+                marketStatus.isOpen ? 'bg-terminal-green animate-pulse' : 'bg-muted-foreground'
               )}
-            >
-              {marketStatus}
-            </span>
-          )}
+            />
+            {marketStatus.label} · IST {marketStatus.istTime}
+          </span>
           <Button
             variant={isInWatchlist ? 'secondary' : 'outline'}
             size="sm"
